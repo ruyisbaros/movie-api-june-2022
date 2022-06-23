@@ -34,6 +34,10 @@ const UserSchema = new mongoose.Schema({
         maxLength: 1024,
         minLength: 4
     },
+    isVerified: {
+        type: Boolean,
+        default: false,
+    },
     avatar: {
         type: Object,
         default: {
@@ -83,6 +87,11 @@ const UserSchema = new mongoose.Schema({
     }, */
     resetPasswordToken: String,
     resetPasswordTime: Date,
+    emailVerificationToken: {
+        type: String,
+        default: "",
+    },
+    emailVerificationTime: Date,
 
 
 }, { timestamps: true })
@@ -117,7 +126,18 @@ UserSchema.methods.createResetToken = function () {
     const resetToken = crypto.randomBytes(20).toString("hex")
     this.resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex")
     //console.log({ resetToken }, this.resetPasswordToken);
-    this.resetPasswordTime = Date.now() + 15 * 60 * 1000 //15 minutes
+    this.resetPasswordTime = Date.now() + 60 * 60 * 1000 //60 minutes
+
+    return resetToken
+}
+
+//Email Verification
+UserSchema.methods.createEmailVerificationToken = function () {
+    //generate crypto token
+    const resetToken = crypto.randomBytes(20).toString("hex")
+    this.emailVerificationToken = crypto.createHash("sha256").update(resetToken).digest("hex")
+    //console.log({ resetToken }, "before click in model", this.emailVerificationToken);
+    this.emailVerificationTime = Date.now() + 60 * 60 * 1000 //60 minutes
 
     return resetToken
 }
