@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const crypto = require("crypto")
 const bcrypt = require("bcrypt")
+const validator = require('validator')
 const jwt = require("jsonwebtoken")
 
 const UserSchema = new mongoose.Schema({
@@ -25,7 +26,7 @@ const UserSchema = new mongoose.Schema({
         unique: true,
         required: true,
         maxLength: 30,
-
+        validate: [validator.isEmail, "Please insert a valid email address"]
     },
     password: {
         type: String,
