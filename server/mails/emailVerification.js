@@ -1,6 +1,6 @@
 const nodeMailer = require("nodemailer")
 
-exports.sendVerifyEmail = async (options) => {
+exports.userAlertMails = async (options) => {
     const transporter = nodeMailer.createTransport({
         host: process.env.SMTP_HOST,
         port: 2525,

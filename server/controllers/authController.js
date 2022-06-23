@@ -2,7 +2,8 @@ const User = require("../models/userModel")
 const jwt = require("jsonwebtoken")
 const asyncHandler = require("express-async-handler")
 const crypto = require("crypto")
-const { sendVerifyEmail } = require('../mails/emailVerification')
+const { userAlertMails } = require('../mails/emailVerification')
+const { sendUserAlongWithTokens } = require('../utils/sendUserAlongWithTokens')
 
 //1.) EMAIL VERIFICATION
 exports.emailVerification = asyncHandler(async (req, res) => {
@@ -28,21 +29,7 @@ exports.emailVerification = asyncHandler(async (req, res) => {
     user.emailVerificationTime = undefined
     await user.save()
 
-    const accessToken = user.createJwtToken()
-    const refreshToken = user.createReFreshToken()
-
-    //console.log(refreshToken);
-
-    res.cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        path: "/api/v1/auth/refresh_token",
-        maxAge: 14 * 24 * 60 * 60 * 1000  //14 days
-
-    })
-
-    //const fulledUser = await User.findById(user._id)/* .populate("followers followings ", "-password") */
-
-    res.status(201).json({ accessToken, user, message: "You Registered successfully" })
+    sendUserAlongWithTokens(user, 201, res)
 
 })
 
@@ -85,7 +72,7 @@ exports.register = asyncHandler(async (req, res) => {
     const html = `Welcome to TurkishFoods webpage. Please confirm your email with clicking the link below: 
     ${resetPasswordUrl}\nIf you did not send this email, please ignore it`
 
-    await sendVerifyEmail({
+    await userAlertMails({
         email: newUser.email,
         subject: "Email verification",
         html
@@ -112,7 +99,7 @@ exports.resendVerificationMail = asyncHandler(async (req, res) => {
     <h1>${emailVerifyToken}</h1>
     
     ` */
-    await sendVerifyEmail({
+    await userAlertMails({
         email: user.email,
         subject: "Email verification",
         html
@@ -123,7 +110,54 @@ exports.resendVerificationMail = asyncHandler(async (req, res) => {
 
 })
 
+//4.) FORGOT PASSWORD
+exports.forgotPassword = asyncHandler(async (req, res, next) => {
 
+    const { email } = req.body
+    const user = await User.findOne({ email })
+    //console.log(user);
+    if (!user) {
+        return next(new Error('No user found with this email'))
+    }
+    const resetToken = user.createPasswordResetToken()
+
+    await user.save({ validateBeforeSave: false })
+
+    //Send a Url to user's email address
+    const resetPasswordUrl = `${req.protocol}://${req.get('host')}/api/auth/password/reset/${resetToken}`
+    const html = `Forgot your password? Submit a PATCH request with your new password and confirm password to: 
+    ${resetPasswordUrl}\nIf you did not forget your password, please ignore this email`
+
+    await userAlertMails({
+        email: user.email,
+        subject: "Changing password",
+        html
+    })
+    res.status(200).json({ message: `Changing password confirmation mail sent to: ${user.email}` })
+})
+
+//5.) Along with mail reset password
+exports.resetPassword = asyncHandler(async (req, res) => {
+    const { resetToken } = req.params
+    const { password } = req.body
+    const hashedResetToken = crypto.createHash("sha256").update(resetToken).digest("hex")
+    const user = await User.findOne({   //If this turns a user means reset tokens are matching
+        resetPasswordToken: hashedResetToken,
+        resetPasswordTime: { $gt: Date.now() }
+    }) //Reset token expired or not? Check it
+    if (!user) {
+        return next(new Error("Reset token is invalid or expired"))
+    }
+    const salt = await bcrypt.genSalt(10)
+    const hashedPassword = await bcrypt.hash(password, salt)
+
+    user.password = hashedPassword
+    user.resetPasswordToken = undefined
+    user.resetPasswordTime = undefined
+    await user.save()
+
+    sendUserAlongWithTokens(user, 201, res)
+})
 
 //4.) LOGIN
 exports.login = asyncHandler(async (req, res) => {
