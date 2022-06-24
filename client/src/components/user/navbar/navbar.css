@@ -1,0 +1,13 @@
+.logo-img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    padding: 3px;
+    border: 2px solid red;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.logo-img:hover {
+    padding: 0;
+}
