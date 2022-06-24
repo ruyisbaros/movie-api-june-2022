@@ -2,15 +2,16 @@ const User = require("../models/userModel")
 const jwt = require("jsonwebtoken")
 const asyncHandler = require("express-async-handler")
 const crypto = require("crypto")
+const bcrypt = require("bcrypt")
 const { userAlertMails } = require('../mails/emailVerification')
 const { sendUserAlongWithTokens } = require('../utils/sendUserAlongWithTokens')
 
-//1.) EMAIL VERIFICATION
+//1.) EMAIL VERIFICATION THEN FINISH REGISTER
 exports.emailVerification = asyncHandler(async (req, res) => {
-    const { token } = req.params
-    if (!token) { return res.status(403).json({ message: "Token is missing!" }) }
+    const { emailToken } = req.params
+    if (!emailToken) { return res.status(403).json({ message: "Token is missing!" }) }
 
-    const hashedResetToken = crypto.createHash("sha256").update(token).digest("hex")
+    const hashedResetToken = crypto.createHash("sha256").update(emailToken).digest("hex")
     //console.log("after click in mail", hashedResetToken);
 
     const user = await User.findOne({   //If this turns a user means reset tokens are matching
@@ -27,13 +28,14 @@ exports.emailVerification = asyncHandler(async (req, res) => {
     user.isVerified = true;
     user.emailVerificationToken = undefined
     user.emailVerificationTime = undefined
+    user.emailOTP = undefined
     await user.save()
 
     sendUserAlongWithTokens(user, 201, res)
 
 })
 
-//2.) REGISTER
+//2.) REGISTER TILL SEND VERIFY EMAIL
 exports.register = asyncHandler(async (req, res) => {
     const { fullName, username, password, email, gender } = req.body
     let transformedUserName = username.toLowerCase().replace(/ /g, "")
@@ -110,7 +112,7 @@ exports.resendVerificationMail = asyncHandler(async (req, res) => {
 
 })
 
-//4.) FORGOT PASSWORD
+//4.) SEND FORGOT PASSWORD LINK AS EMAIL
 exports.forgotPassword = asyncHandler(async (req, res, next) => {
 
     const { email } = req.body
@@ -124,7 +126,7 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
     await user.save({ validateBeforeSave: false })
 
     //Send a Url to user's email address
-    const resetPasswordUrl = `${req.protocol}://${req.get('host')}/api/auth/password/reset/${resetToken}`
+    const resetPasswordUrl = `${req.protocol}://${req.get('host')}/api/v1/auth/password_reset/${resetToken}`
     const html = `Forgot your password? Submit a PATCH request with your new password and confirm password to: 
     ${resetPasswordUrl}\nIf you did not forget your password, please ignore this email`
 
@@ -136,17 +138,17 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
     res.status(200).json({ message: `Changing password confirmation mail sent to: ${user.email}` })
 })
 
-//5.) Along with mail reset password
-exports.resetPassword = asyncHandler(async (req, res) => {
-    const { resetToken } = req.params
+//5.) Along with mail change password
+exports.resetPassword = asyncHandler(async (req, res, next) => {
+    const { passwordToken } = req.params
     const { password } = req.body
-    const hashedResetToken = crypto.createHash("sha256").update(resetToken).digest("hex")
+    const hashedPasswordToken = crypto.createHash("sha256").update(passwordToken).digest("hex")
     const user = await User.findOne({   //If this turns a user means reset tokens are matching
-        resetPasswordToken: hashedResetToken,
+        resetPasswordToken: hashedPasswordToken,
         resetPasswordTime: { $gt: Date.now() }
     }) //Reset token expired or not? Check it
     if (!user) {
-        return next(new Error("Reset token is invalid or expired"))
+        return res.status(403).json({ message: "invalid or expired token" })
     }
     const salt = await bcrypt.genSalt(10)
     const hashedPassword = await bcrypt.hash(password, salt)
@@ -154,12 +156,13 @@ exports.resetPassword = asyncHandler(async (req, res) => {
     user.password = hashedPassword
     user.resetPasswordToken = undefined
     user.resetPasswordTime = undefined
+    user.passwordOTP = undefined
     await user.save()
 
     sendUserAlongWithTokens(user, 201, res)
 })
 
-//4.) LOGIN
+//6.) LOGIN
 exports.login = asyncHandler(async (req, res) => {
 
 })

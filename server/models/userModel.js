@@ -92,6 +92,8 @@ const UserSchema = new mongoose.Schema({
         default: "",
     },
     emailVerificationTime: Date,
+    emailOTP: String,
+    passwordOTP: String
 
 
 }, { timestamps: true })
@@ -140,6 +142,25 @@ UserSchema.methods.createEmailVerificationToken = function () {
     this.emailVerificationTime = Date.now() + 60 * 60 * 1000 //60 minutes
 
     return resetToken
+}
+
+UserSchema.methods.createEmailOtp = function () {
+    let code = ""
+    for (let i = 0; i < 5; i++) {
+        code += Math.round(Math.random() * 9)
+    }
+    this.emailOTP = code
+
+    return code
+}
+UserSchema.methods.createPasswordOtp = function () {
+    let code = ""
+    for (let i = 0; i < 5; i++) {
+        code += Math.round(Math.random() * 9)
+    }
+    this.passwordOTP = code
+
+    return code
 }
 
 const User = mongoose.model("User", UserSchema);
