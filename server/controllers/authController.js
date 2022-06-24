@@ -2,7 +2,7 @@ const User = require("../models/userModel")
 const jwt = require("jsonwebtoken")
 const asyncHandler = require("express-async-handler")
 const crypto = require("crypto")
-const bcrypt = require("bcrypt")
+//const bcrypt = require("bcrypt")
 const { userAlertMails } = require('../mails/emailVerification')
 const { sendUserAlongWithTokens } = require('../utils/sendUserAlongWithTokens')
 
@@ -150,10 +150,10 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
     if (!user) {
         return res.status(403).json({ message: "invalid or expired token" })
     }
-    const salt = await bcrypt.genSalt(10)
-    const hashedPassword = await bcrypt.hash(password, salt)
+    /* const salt = await bcrypt.genSalt(10)
+    const hashedPassword = await bcrypt.hash(password, salt) */
 
-    user.password = hashedPassword
+    user.password = password
     user.resetPasswordToken = undefined
     user.resetPasswordTime = undefined
     user.passwordOTP = undefined
@@ -164,5 +164,17 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
 
 //6.) LOGIN
 exports.login = asyncHandler(async (req, res) => {
+    const { email, password } = req.body
 
+    if (!email || !password) {
+        return res.status(500).json({ message: "Missing information (email or password)" })
+    }
+
+    const user = await User.findOne({ email })
+    if (!user) return res.status(500).json({ message: "No user could be found!" })
+
+    const isMatch = await user.isPasswordTrue(password)
+    if (!isMatch) return res.status(500).json({ message: "Wrong credentials" })
+
+    sendUserAlongWithTokens(user, 201, res)
 })
