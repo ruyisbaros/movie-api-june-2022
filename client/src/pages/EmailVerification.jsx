@@ -54,14 +54,14 @@ const EmailVerification = () => {
                 <form className={modalFormClasses}>
                     <div>
                         <Title>To verify your email, please enter the code </Title>
-                        <p className="text-center text-dark-subtle text-sm">The code has been sent to your email</p>
+                        <p className="text-center dark:text-dark-subtle text-secondary text-sm">The code has been sent to your email</p>
                     </div>
                     <div className="flex justify-center space-x-3">
                         {code.map((_, index) => (
                             <input key={index}
                                 ref={activeCodeIndex === index ? inputRef : null}
                                 type="number"
-                                className="w-12 h-12 border-2 rounded dark:border-dark-subtle border-secondary
+                                className="w-12 h-12 border-2 rounded dark:border-dark-subtle border-light-subtle
                         dark:bg-transparent bg-dark-subtle  transition dark:focus:border-white focus:border-primary text-center dark:text-white text-secondary
                         font-semibold text-xl spin-button-none"
 
