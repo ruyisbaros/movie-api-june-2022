@@ -6,11 +6,12 @@ const FormInput = ({ name, placeholder, label, ...rest }) => {
             <input name={name} id={name}
                 placeholder={placeholder}
                 className=" text-white bg-transparent rounded border-2 
-                            border-primary  focus:border-dark-subtle w-full text-lg p-1
+                            dark:border-dark-subtle  dark:focus:border-dark-subtle focus:border-secondary w-full text-lg p-1
                             peer transition"
                 {...rest}
             />
-            <label className="text-dark-subtle text-sm font-semibold peer-focus:text-white mb-1" htmlFor={name}>{label} :</label>
+            <label className="dark:text-dark-subtle text-secondary text-sm font-semibold 
+            dark:peer-focus:text-white peer-focus:text-secondary mb-1" htmlFor={name}>{label} :</label>
         </div>
     )
 }

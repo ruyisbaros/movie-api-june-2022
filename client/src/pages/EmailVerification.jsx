@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Submit from '../components/Plug & Play comps/Submit'
 import Title from '../components/Plug & Play comps/Title'
+import { modalFormClasses, modalFormParentClasses } from '../utils/theme'
 
 const code_length = 5
 
@@ -48,9 +49,9 @@ const EmailVerification = () => {
     }, [activeCodeIndex])
     //console.log(inputRef);
     return (
-        <div className="fixed inset-0 bg-primary -z-10 flex items-center content-center">
+        <div className={modalFormParentClasses}>
             <div className="max-w-screen-xl mx-auto">
-                <form className="bg-secondary rounded p-6 space-y-6">
+                <form className={modalFormClasses}>
                     <div>
                         <Title>To verify your email, please enter the code </Title>
                         <p className="text-center text-dark-subtle text-sm">The code has been sent to your email</p>
@@ -60,8 +61,8 @@ const EmailVerification = () => {
                             <input key={index}
                                 ref={activeCodeIndex === index ? inputRef : null}
                                 type="number"
-                                className="w-12 h-12 border-2 rounded border-dark-subtle 
-                        bg-transparent  transition focus:border-white text-center text-white
+                                className="w-12 h-12 border-2 rounded dark:border-dark-subtle border-secondary
+                        dark:bg-transparent bg-dark-subtle  transition dark:focus:border-white focus:border-primary text-center dark:text-white text-secondary
                         font-semibold text-xl spin-button-none"
 
                                 value={code[index] || ""}

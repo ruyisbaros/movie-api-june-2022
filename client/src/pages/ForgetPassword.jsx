@@ -3,12 +3,13 @@ import FormInput from '../components/Plug & Play comps/FormInput'
 import RouterLink from '../components/Plug & Play comps/RouterLink'
 import Submit from '../components/Plug & Play comps/Submit'
 import Title from '../components/Plug & Play comps/Title'
+import { modalFormClasses, modalFormParentClasses } from '../utils/theme'
 
 const ForgetPassword = () => {
     return (
-        <div className="fixed inset-0 bg-primary -z-10 flex items-center content-center">
+        <div className={modalFormParentClasses}>
             <div className="max-w-screen-xl mx-auto">
-                <form className="bg-secondary rounded p-6 w-96 space-y-6">
+                <form className={modalFormClasses + " w-96"}>
                     <Title>Please Enter Your Email</Title>
                     <FormInput type="email" name="email" placeholder="Enter your email" label="Email" />
 
