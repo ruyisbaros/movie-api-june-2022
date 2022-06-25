@@ -11,8 +11,8 @@ const Login = () => {
             <div className="max-w-screen-xl mx-auto">
                 <form className="bg-secondary rounded p-6 w-72 space-y-6">
                     <Title>Login</Title>
-                    <FormInput name="email" placeholder="Enter your email" label="Email" />
-                    <FormInput name="password" placeholder="Enter your password" label="Password" />
+                    <FormInput type="email" name="email" placeholder="Enter your email" label="Email" />
+                    <FormInput type="password" name="password" placeholder="Enter your password" label="Password" />
                     <Submit value="Login" />
 
                     <div className="flex justify-between items-center">

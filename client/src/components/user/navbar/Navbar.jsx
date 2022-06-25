@@ -17,7 +17,7 @@ const Navbar = () => {
 
                     <ul className="flex items-center space-x-4">
                         <button className="bg-dark-subtle p-1 rounded">
-                            <li><GiArchiveResearch className="text-secondary " size={24} /></li>
+                            <li><GiArchiveResearch className="text-secondary transition hover:text-white " size={24} /></li>
                         </button>
                         <li>
                             <input type="text" className="border-2 border-dark-subtle p-1 rounded bg-transparent text-xl

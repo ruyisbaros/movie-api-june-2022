@@ -11,9 +11,9 @@ const Register = () => {
             <div className="max-w-screen-xl mx-auto">
                 <form className="bg-secondary rounded p-6 w-72 space-y-6">
                     <Title>Register</Title>
-                    <FormInput name="fullName" placeholder="Enter your full name" label="Full Name" />
-                    <FormInput name="email" placeholder="Enter your email" label="Email" />
-                    <FormInput name="password" placeholder="Enter your password" label="Password" />
+                    <FormInput required type="text" name="fullName" placeholder="Enter your full name" label="Full Name" />
+                    <FormInput required type="email" name="email" placeholder="Enter your email" label="Email" />
+                    <FormInput required type="password" name="password" placeholder="Enter your password" label="Password" />
                     <Submit value="Register" />
 
                     <div className="flex justify-between items-center">

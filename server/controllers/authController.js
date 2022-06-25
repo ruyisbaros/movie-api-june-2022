@@ -66,13 +66,25 @@ exports.register = asyncHandler(async (req, res) => {
     for (let i = 0; i < 5; i++) {
         code += Math.round(Math.random() * 9)
     } */
-    const emailVerifyToken = newUser.createEmailVerificationToken()
+    /* const emailVerifyToken = newUser.createEmailVerificationToken()
     await newUser.save({ validateBeforeSave: false }) //if you don't save, verificationToken will not be saved in data
 
     //console.log(code, emailVerifyToken);
     const resetPasswordUrl = `${req.protocol}://${req.get('host')}/api/v1/auth/email_confirm/${emailVerifyToken}`
     const html = `Welcome to TurkishFoods webpage. Please confirm your email with clicking the link below: 
-    ${resetPasswordUrl}\nIf you did not send this email, please ignore it`
+    ${resetPasswordUrl}\nIf you did not send this email, please ignore it` */
+    //const emailVerifyToken = user.createEmailVerificationToken()
+    const OTPCode = newUser.createEmailOtp()
+    await newUser.save({ validateBeforeSave: false })
+
+    /* const resetPasswordUrl = `${req.protocol}://${req.get('host')}/api/v1/auth/email_confirm/${emailVerifyToken}`
+    const html = `Welcome to TurkishFoods webpage. Please confirm your email with clicking the link below: 
+    ${resetPasswordUrl}\nIf you did not send this email, please ignore it` */
+    const html = `
+    <p>Your verification token:</p>
+    <h1>${OTPCode}</h1>
+    
+    `
 
     await userAlertMails({
         email: newUser.email,
@@ -90,17 +102,18 @@ exports.resendVerificationMail = asyncHandler(async (req, res) => {
     if (!user) return res.status(403).json({ message: "User not found" })
     if (user.isVerified) { return res.status(403).json({ message: "User is already verified!" }) }
 
-    const emailVerifyToken = user.createEmailVerificationToken()
+    //const emailVerifyToken = user.createEmailVerificationToken()
+    const OTPCode = user.createEmailOtp
     await user.save({ validateBeforeSave: false })
 
-    const resetPasswordUrl = `${req.protocol}://${req.get('host')}/api/v1/auth/email_confirm/${emailVerifyToken}`
+    /* const resetPasswordUrl = `${req.protocol}://${req.get('host')}/api/v1/auth/email_confirm/${emailVerifyToken}`
     const html = `Welcome to TurkishFoods webpage. Please confirm your email with clicking the link below: 
-    ${resetPasswordUrl}\nIf you did not send this email, please ignore it`
-    /* const html = `
+    ${resetPasswordUrl}\nIf you did not send this email, please ignore it` */
+    const html = `
     <p>Your verification token:</p>
-    <h1>${emailVerifyToken}</h1>
+    <h1>${OTPCode}</h1>
     
-    ` */
+    `
     await userAlertMails({
         email: user.email,
         subject: "Email verification",

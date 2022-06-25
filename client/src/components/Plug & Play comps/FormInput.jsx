@@ -10,7 +10,7 @@ const FormInput = ({ name, placeholder, label, ...rest }) => {
                             peer transition"
                 {...rest}
             />
-            <label className="text-dark-subtle font-semibold peer-focus:text-white mb-1" htmlFor={name}>{label} :</label>
+            <label className="text-dark-subtle text-sm font-semibold peer-focus:text-white mb-1" htmlFor={name}>{label} :</label>
         </div>
     )
 }

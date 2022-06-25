@@ -11,19 +11,42 @@ const EmailVerification = () => {
 
     const inputRef = useRef()
 
-    const handleCode = ({ target }, index) => {
+    let currentCodeIndex;
+
+    const focusNextInputField = (index) => {
+        setActiveCodeIndex(index + 1)
+    }
+
+    const focusPreviousInputField = (index) => {
+        let prevIndex;
+        const diff = index - 1
+        prevIndex = diff !== 0 ? diff : 0
+        setActiveCodeIndex(prevIndex)
+    }
+
+    const handleCodeChanges = ({ target }) => {
         const { value } = target
         const newCode = [...code]
-        newCode[index] = value
-        setCode(newCode)
-        //setCode([value])
-        setActiveCodeIndex(index + 1)
+        newCode[currentCodeIndex] = value.substring(value.length - 1, value.length)
+        //value.length === 2 && focusNextInputField(currentCodeIndex)
+        console.log(value);
+        if (!value) focusPreviousInputField(currentCodeIndex)
+        else focusNextInputField(currentCodeIndex)
+
+        setCode([...newCode])
+    }
+
+    const handleKeyDown = ({ key }, index) => {
+        currentCodeIndex = index
+        if (key === "Backspace") {
+            focusPreviousInputField(currentCodeIndex);
+        }
     }
 
     useEffect(() => {
         inputRef.current?.focus()
     }, [activeCodeIndex])
-    console.log(inputRef);
+    //console.log(inputRef);
     return (
         <div className="fixed inset-0 bg-primary -z-10 flex items-center content-center">
             <div className="max-w-screen-xl mx-auto">
@@ -42,7 +65,8 @@ const EmailVerification = () => {
                         font-semibold text-xl spin-button-none"
 
                                 value={code[index] || ""}
-                                onChange={(e) => handleCode(e, index)}
+                                onChange={handleCodeChanges}
+                                onKeyDown={(e) => handleKeyDown(e, index)}
                             />
                         ))}
                     </div>

@@ -89,8 +89,8 @@ const UserSchema = new mongoose.Schema({
     resetPasswordTime: Date,
     emailVerificationToken: String,
     emailVerificationTime: Date,
-    emailOTP: String,
-    passwordOTP: String
+    emailOTP: String,  //On-Time Password
+    passwordOTP: String //On-Time Password
 
 
 }, { timestamps: true })
@@ -153,6 +153,7 @@ UserSchema.methods.createEmailOtp = function () {
 UserSchema.methods.createPasswordOtp = function () {
     let code = ""
     for (let i = 0; i < 5; i++) {
+
         code += Math.round(Math.random() * 9)
     }
     this.passwordOTP = code
