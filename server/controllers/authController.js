@@ -37,7 +37,7 @@ exports.emailVerification = asyncHandler(async (req, res) => {
 
 //2.) REGISTER TILL SEND VERIFY EMAIL
 exports.register = asyncHandler(async (req, res) => {
-    const { fullName, username, password, email, gender } = req.body
+    const { fullName, username, password, email } = req.body
     let transformedUserName = username.toLowerCase().replace(/ /g, "")
 
     const user_name = await User.findOne({ username: transformedUserName })
@@ -58,7 +58,7 @@ exports.register = asyncHandler(async (req, res) => {
         username: transformedUserName,
         password,
         email,
-        gender
+
     })
 
     //----------VERIFY EMAIL -------
@@ -81,8 +81,9 @@ exports.register = asyncHandler(async (req, res) => {
     const html = `Welcome to TurkishFoods webpage. Please confirm your email with clicking the link below: 
     ${resetPasswordUrl}\nIf you did not send this email, please ignore it` */
     const html = `
-    <p>Your verification token:</p>
-    <h1>${OTPCode}</h1>
+    Welcome to TurkishFoods webpage.
+    Please confirm your email with below below:
+    ${OTPCode}
     
     `
 

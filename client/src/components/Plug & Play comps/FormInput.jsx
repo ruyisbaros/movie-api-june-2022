@@ -4,8 +4,9 @@ const FormInput = ({ name, placeholder, label, ...rest }) => {
     return (
         <div className="flex flex-col-reverse">
             <input name={name} id={name}
+
                 placeholder={placeholder}
-                className=" text-white bg-transparent rounded border-2 
+                className=" dark:text-white text-light-subtle bg-transparent rounded border-2 
                             dark:border-dark-subtle  dark:focus:border-dark-subtle focus:border-secondary w-full text-lg p-1
                             peer transition"
                 {...rest}
