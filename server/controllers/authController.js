@@ -22,9 +22,7 @@ exports.emailVerification = asyncHandler(async (req, res) => {
     }
     if (user.isVerified) { return res.status(403).json({ message: "User is already verified!" }) }
 
-    user.isVerified = true;
-    //user.emailVerificationToken = undefined
-    //user.emailVerificationTime = undefined
+    user.isVerified = true;  //THE MAIN GOAL
     user.emailOTP = undefined
     user.emailOTPTime = undefined
     await user.save()

@@ -6,14 +6,17 @@ import './index.css';
 import App from './App';
 import { BrowserRouter } from "react-router-dom"
 import ThemeProvider from "./Context/ThemeProvider.jsx"
+import AuthProvider from "./Context/AuthProvider.jsx"
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <BrowserRouter>
     <ToastContainer position="bottom-center" limit={1} />
-    <ThemeProvider>
-      <App />
-    </ThemeProvider>
+    <AuthProvider>
+      <ThemeProvider>
+        <App />
+      </ThemeProvider>
+    </AuthProvider>
   </BrowserRouter>
 );
 

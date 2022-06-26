@@ -8,6 +8,17 @@ import { toast } from "react-toastify"
 
 const code_length = 5
 
+const validateOTP = (code) => {
+
+    for (let value of code) {
+        if (isNaN(parseInt(value))) {
+            return { ok: false, error: "OTP must be at least 5 characters" }
+        }
+    }
+
+    return { ok: true }
+}
+
 const EmailVerification = () => {
 
     const [code, setCode] = useState(new Array(code_length).fill(""))
@@ -52,20 +63,20 @@ const EmailVerification = () => {
 
     const handleVerification = async (e) => {
         e.preventDefault()
+        const { ok, error } = validateOTP(code)
+        if (!ok) return toast.error(error)
 
         try {
             const { data } = await axios.get(`/api/v1/auth/email_confirm/${code.join("")}`)
             toast.success("Your email has been verified successfully :)")
             if (data.user.isVerified) {
-                navigate("/home")
+                navigate("/")
             }
-            console.log('verified user', data);
+            //console.log('verified user', data);
         } catch (error) {
             toast.error(error.response.data.message)
         }
-
     }
-
 
     useEffect(() => {
         inputRef.current?.focus()
@@ -99,7 +110,7 @@ const EmailVerification = () => {
                             />
                         ))}
                     </div>
-                    <Submit value="Send The Code" />
+                    <Submit value="verify Account" />
 
 
                 </form>
