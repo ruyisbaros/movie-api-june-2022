@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import Submit from '../components/Plug & Play comps/Submit'
 import Title from '../components/Plug & Play comps/Title'
 import { modalFormClasses, modalFormParentClasses } from '../utils/theme'
+import { useLocation } from "react-router-dom"
 
 const code_length = 5
 
@@ -12,6 +13,8 @@ const EmailVerification = () => {
 
     const inputRef = useRef()
 
+    const { state } = useLocation()
+    console.log("state:", state);
     let currentCodeIndex;
 
     const focusNextInputField = (index) => {
@@ -30,7 +33,7 @@ const EmailVerification = () => {
         const newCode = [...code]
         newCode[currentCodeIndex] = value.substring(value.length - 1, value.length)
         //value.length === 2 && focusNextInputField(currentCodeIndex)
-        console.log(value);
+        //console.log(value);
         if (!value) focusPreviousInputField(currentCodeIndex)
         else focusNextInputField(currentCodeIndex)
 

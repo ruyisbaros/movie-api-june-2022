@@ -7,6 +7,7 @@ import Register from './pages/Register';
 import EmailVerification from './pages/EmailVerification';
 import ForgetPassword from './pages/ForgetPassword';
 import ConfirmPassword from './pages/ConfirmPassword';
+import PageNotFound from './pages/PageNotFound';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/verification" element={<EmailVerification />} />
           <Route path="/forget-password" element={<ForgetPassword />} />
           <Route path="/confirm-password" element={<ConfirmPassword />} />
+          <Route path="/*" element={<PageNotFound />} />
         </Routes>
 
       </>

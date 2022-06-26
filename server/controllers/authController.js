@@ -8,15 +8,12 @@ const { sendUserAlongWithTokens } = require('../utils/sendUserAlongWithTokens')
 
 //1.) EMAIL VERIFICATION THEN FINISH REGISTER
 exports.emailVerification = asyncHandler(async (req, res) => {
-    const { emailToken } = req.params
-    if (!emailToken) { return res.status(403).json({ message: "Token is missing!" }) }
-
-    const hashedResetToken = crypto.createHash("sha256").update(emailToken).digest("hex")
-    //console.log("after click in mail", hashedResetToken);
+    const { otp } = req.params
+    if (!otp) { return res.status(403).json({ message: "Token is missing!" }) }
 
     const user = await User.findOne({   //If this turns a user means reset tokens are matching
-        emailVerificationToken: hashedResetToken,
-        emailVerificationTime: { $gt: Date.now() }
+        emailOTP: otp,
+        emailOTPTime: { $gt: Date.now() }
     }) //Reset token expired or not? Check it
     //console.log(user);
 
@@ -26,9 +23,10 @@ exports.emailVerification = asyncHandler(async (req, res) => {
     if (user.isVerified) { return res.status(403).json({ message: "User is already verified!" }) }
 
     user.isVerified = true;
-    user.emailVerificationToken = undefined
-    user.emailVerificationTime = undefined
+    //user.emailVerificationToken = undefined
+    //user.emailVerificationTime = undefined
     user.emailOTP = undefined
+    user.emailOTPTime = undefined
     await user.save()
 
     sendUserAlongWithTokens(user, 201, res)
@@ -61,25 +59,9 @@ exports.register = asyncHandler(async (req, res) => {
 
     })
 
-    //----------VERIFY EMAIL -------
-    /* let code = ""
-    for (let i = 0; i < 5; i++) {
-        code += Math.round(Math.random() * 9)
-    } */
-    /* const emailVerifyToken = newUser.createEmailVerificationToken()
-    await newUser.save({ validateBeforeSave: false }) //if you don't save, verificationToken will not be saved in data
-
-    //console.log(code, emailVerifyToken);
-    const resetPasswordUrl = `${req.protocol}://${req.get('host')}/api/v1/auth/email_confirm/${emailVerifyToken}`
-    const html = `Welcome to TurkishFoods webpage. Please confirm your email with clicking the link below: 
-    ${resetPasswordUrl}\nIf you did not send this email, please ignore it` */
-    //const emailVerifyToken = user.createEmailVerificationToken()
     const OTPCode = newUser.createEmailOtp()
     await newUser.save({ validateBeforeSave: false })
 
-    /* const resetPasswordUrl = `${req.protocol}://${req.get('host')}/api/v1/auth/email_confirm/${emailVerifyToken}`
-    const html = `Welcome to TurkishFoods webpage. Please confirm your email with clicking the link below: 
-    ${resetPasswordUrl}\nIf you did not send this email, please ignore it` */
     const html = `
     Welcome to TurkishFoods webpage.
     Please confirm your email with below below:
@@ -93,7 +75,14 @@ exports.register = asyncHandler(async (req, res) => {
         html
     })
 
-    res.status(200).json({ message: "Verification Mail has been sent your account. Please confirm" })
+    res.status(200).json({
+        user: {
+            id: newUser._id,
+            username: newUser.username,
+            email: newUser.email
+        },
+        message: "Your email confirmation code has been sent to your email. Please confirm"
+    })
 })
 
 //3.) The users who didn't verify their email

@@ -6,7 +6,7 @@ const { check } = require('express-validator')
 router.post('/register', register)
 router.post('/login', login)
 /* Verify Register */
-router.get('/email_confirm/:emailToken', emailVerification)
+router.get('/email_confirm/:otp', emailVerification)
 router.post('/resend_verify/:id', resendVerificationMail)
 /* Password Operations*/
 router.post('/forgot_password', forgotPassword)

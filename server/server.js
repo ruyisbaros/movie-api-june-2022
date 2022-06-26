@@ -11,6 +11,7 @@ const app = express()
 //Import Routes
 const userRouter = require("./routes/userRouter")
 const authRouter = require("./routes/authRouter")
+const { notFound } = require("./utils/NotFound")
 //const uploadRouter = require("./routes/uploadRouter")
 //const postRouter = require("./routes/postRouter")
 //const commentRouter = require("./routes/commentRouter")
@@ -51,6 +52,7 @@ app.use("/api/v1/users", userRouter)
 //app.use("/api/v1/notifications", notificationRouter)
 //app.use("/api/v1/chats", chatRouter) 
 
+app.use("/*", notFound) //for unknown routes
 
 const port = process.env.PORT || 8080
 
