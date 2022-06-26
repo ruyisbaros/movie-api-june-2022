@@ -2,7 +2,9 @@ import React, { useState, useEffect, useRef } from 'react'
 import Submit from '../components/Plug & Play comps/Submit'
 import Title from '../components/Plug & Play comps/Title'
 import { modalFormClasses, modalFormParentClasses } from '../utils/theme'
-import { useLocation } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
+import axios from 'axios'
+import { toast } from "react-toastify"
 
 const code_length = 5
 
@@ -12,9 +14,10 @@ const EmailVerification = () => {
     const [activeCodeIndex, setActiveCodeIndex] = useState(0)
 
     const inputRef = useRef()
+    const navigate = useNavigate()
 
     const { state } = useLocation()
-    console.log("state:", state);
+    //console.log("state:", state);
     let currentCodeIndex;
 
     const focusNextInputField = (index) => {
@@ -47,14 +50,36 @@ const EmailVerification = () => {
         }
     }
 
+    const handleVerification = async (e) => {
+        e.preventDefault()
+
+        try {
+            const { data } = await axios.get(`/api/v1/auth/email_confirm/${code.join("")}`)
+            toast.success("Your email has been verified successfully :)")
+            if (data.user.isVerified) {
+                navigate("/home")
+            }
+            console.log('verified user', data);
+        } catch (error) {
+            toast.error(error.response.data.message)
+        }
+
+    }
+
+
     useEffect(() => {
         inputRef.current?.focus()
     }, [activeCodeIndex])
     //console.log(inputRef);
+
+    useEffect(() => {
+        if (!state) navigate("/not-found")
+    }, [state, navigate])
+
     return (
         <div className={modalFormParentClasses}>
             <div className="max-w-screen-xl mx-auto">
-                <form className={modalFormClasses}>
+                <form className={modalFormClasses} onSubmit={handleVerification}>
                     <div>
                         <Title>To verify your email, please enter the code </Title>
                         <p className="text-center dark:text-dark-subtle text-secondary text-sm">The code has been sent to your email</p>
